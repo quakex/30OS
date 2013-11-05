@@ -7,4 +7,5 @@
 *.lst
 *.hrb
 *.bin
-
+!cons_nt.bat
+!cons_9x.bat
