@@ -30,7 +30,6 @@ entry:
 		MOV 	SS,AX
 		MOV 	SP,0x7c00		;??这一句的含义？
 		MOV 	DS,AX
-		MOV 	ES,AX
 
 ; 读磁盘
 
@@ -40,12 +39,22 @@ entry:
 		MOV		DH,0 			; 磁头0
 		MOV		CL,2 			; 扇区2
 
+
+		MOV 	SI,0 			; 记录失败次数的寄存器
+retry:
 		MOV 	AH,0X02 		; 读盘
 		MOV		AL,1 			; 一个扇区
 		MOV  	BX,0
 		MOV 	DL,0X00 		; A 驱动器
-		INT 	0X13 			; 调用磁盘 BIOS
-		JC 		error
+		INT 	0x13 			; 调用磁盘 BIOS
+		JNC 	fin 			; 没出错的话跳转到 fin
+		ADD 	SI,1 			;
+		CMP 	SI,5
+		JAE 	error
+		MOV 	AH,0X00
+		MOV 	DL,0X00
+		INT 	0x13 			; 重置驱动器
+		JMP 	retry
 
 fin:
 		HLT 					; 让 CPU 停止，等待指令
