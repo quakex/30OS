@@ -1,11 +1,11 @@
-;hello-os3
+;haribote-ipl
 
 		ORG 	0x7c00 			; 指明程序的装载地址
 
 ; 以下这段是标准 FAT12格式软盘专用代码
 		JMP 	entry
 		DB		0x90
-		DB		"HELLOIPL"		; 启动区的名称可以是任意的字符串（8字节）
+		DB		"HARIBOTE"		; 启动区的名称可以是任意的字符串（8字节）
 		DW		512				; 每个扇区的大小（必须为512字节）
 		DB		1				; 蔟cluster的大小（必须为一个扇区）
 		DW		1				; FAT的起始位置（一般从第一个扇区开始）
@@ -32,6 +32,26 @@ entry:
 		MOV 	DS,AX
 		MOV 	ES,AX
 
+; 读磁盘
+
+		MOV 	AX,0X0820
+		MOV		ES,AX
+		MOV		CH,0 			; 柱面0
+		MOV		DH,0 			; 磁头0
+		MOV		CL,2 			; 扇区2
+
+		MOV 	AH,0X02 		; 读盘
+		MOV		AL,1 			; 一个扇区
+		MOV  	BX,0
+		MOV 	DL,0X00 		; A 驱动器
+		INT 	0X13 			; 调用磁盘 BIOS
+		JC 		error
+
+fin:
+		HLT 					; 让 CPU 停止，等待指令
+		JMP fin					; 无限循环
+
+error:
 		MOV 	SI,msg
 putloop:
 		MOV		AL,[SI]
@@ -42,13 +62,11 @@ putloop:
 		MOV		BX,15			; 指定字符颜色
 		INT		0x10			; 调用显卡 BIOS
 		JMP		putloop
-fin:
-		HLT 					; 让 CPU 停止，等待指令
-		JMP fin					; 无限循环
+
 ; 信息显示部分
 msg:
 		DB		0x0a, 0x0a		; 2个换行
-		DB		"hello, world"
+		DB		"MASTER, LOAD ERROR!"
 		DB		0x0a			; 换行
 		DB		0
 
