@@ -1,5 +1,7 @@
 ;haribote-ipl
 
+CYLS	EQU		10				; 读入10个柱面
+
 		ORG 	0x7c00 			; 指明程序的装载地址
 
 ; 以下这段是标准 FAT12格式软盘专用代码
@@ -62,6 +64,14 @@ next:
 		ADD 	CL,1 			; 往 CL 里加1
 		CMP 	CL,18			; 比较 CL 和18
 		JBE 	readloop 		; 如果 CL <= 18 跳转到 readloop
+		MOV 	CL,1
+		ADD 	DH,1
+		CMP 	DH,2
+		JB 		readloop 		; 如果 DH<2，则跳转到 readloop
+		MOV 	DH,0
+		ADD 	CH,1
+		CMP 	CH,CYLS
+		JB 		readloop 		; 如果 CH<CYLS，则跳转到 readloop
 fin:
 		HLT 					; 让 CPU 停止，等待指令
 		JMP 	fin				; 无限循环
