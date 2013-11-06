@@ -35,7 +35,7 @@ entry:
 
 ; 读磁盘
 
-		MOV 	AX,0X0820
+		MOV 	AX,0x0820
 		MOV		ES,AX
 		MOV		CH,0 			; 柱面0
 		MOV		DH,0 			; 磁头0
@@ -48,7 +48,7 @@ retry:
 		MOV  	BX,0
 		MOV 	DL,0X00 		; A 驱动器
 		INT 	0x13 			; 调用磁盘 BIOS
-		JNC 	fin 			; 没出错的话跳转到 fin
+		JNC 	next 			; 没出错的话跳转到 fin
 		ADD 	SI,1 			;
 		CMP 	SI,5
 		JAE 	error
@@ -72,6 +72,11 @@ next:
 		ADD 	CH,1
 		CMP 	CH,CYLS
 		JB 		readloop 		; 如果 CH<CYLS，则跳转到 readloop
+
+; 执行 haribote.sys
+		MOV 	[0x0ff0],CH		; TODO 这一句意思咱不明确，感觉应该是保存 CH 的值
+		JMP 	0xc200
+
 fin:
 		HLT 					; 让 CPU 停止，等待指令
 		JMP 	fin				; 无限循环
