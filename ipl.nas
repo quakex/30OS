@@ -38,8 +38,7 @@ entry:
 		MOV		CH,0 			; 柱面0
 		MOV		DH,0 			; 磁头0
 		MOV		CL,2 			; 扇区2
-
-
+readloop:
 		MOV 	SI,0 			; 记录失败次数的寄存器
 retry:
 		MOV 	AH,0X02 		; 读盘
@@ -56,9 +55,16 @@ retry:
 		INT 	0x13 			; 重置驱动器
 		JMP 	retry
 
+next:
+		MOV 	AX,ES 			; 把地址后移0x200
+		ADD 	AX,0x0020 		;
+		MOV 	ES,AX			; 因为没有 ADD ES, 0x020 指令，所以这里绕了个弯
+		ADD 	CL,1 			; 往 CL 里加1
+		CMP 	CL,18			; 比较 CL 和18
+		JBE 	readloop 		; 如果 CL <= 18 跳转到 readloop
 fin:
 		HLT 					; 让 CPU 停止，等待指令
-		JMP fin					; 无限循环
+		JMP 	fin				; 无限循环
 
 error:
 		MOV 	SI,msg
