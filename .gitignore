@@ -7,5 +7,8 @@
 *.lst
 *.hrb
 *.bin
+*.gas
+*.bim
 !cons_nt.bat
 !cons_9x.bat
+bootpack.nas
