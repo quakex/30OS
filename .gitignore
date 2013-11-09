@@ -9,6 +9,7 @@
 *.bin
 *.gas
 *.bim
+*.txt
 !cons_nt.bat
 !cons_9x.bat
 bootpack.nas
