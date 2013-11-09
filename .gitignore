@@ -10,6 +10,11 @@
 *.gas
 *.bim
 *.txt
+*.nas
+!naskfunc.nas
+!asmhead.nas
+!ipl10.nas
+
 !cons_nt.bat
 !cons_9x.bat
 bootpack.nas
